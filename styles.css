@@ -6,13 +6,17 @@ html, body {
   color: #e5e7eb;
 }
 
-/* Header */
+/* Header layout */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 1000;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   background: rgba(11, 15, 20, 0.85);
   backdrop-filter: blur(8px);
@@ -21,6 +25,12 @@ html, body {
   box-sizing: border-box;
 
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Left side (title + subtitle stacked) */
+.header-left {
+  display: flex;
+  flex-direction: column;
 }
 
 /* Title */
@@ -40,11 +50,12 @@ html, body {
   color: #9ca3af;
 }
 
-/* Counter */
+/* Counter on right */
 #counter {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 18px;        /* same as title */
+  font-weight: 700;
+  color: #22c55e;         /* subtle highlight */
+  white-space: nowrap;
 }
 
 /* Map layout */
