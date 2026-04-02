@@ -5,7 +5,7 @@
   <title>Pedestrian Overhead Walkways</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- DM Sans Font -->
+  <!-- DM Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
@@ -16,28 +16,26 @@
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
 
-  <!-- Your CSS -->
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
 
-  <!-- Header -->
- <div class="header">
-  <div class="header-left">
-    <h1>Pedestrian Overhead Walkways</h1>
-    <p>Are your footover bridges accessible?</p>
+  <div class="header">
+    <div class="header-left">
+      <h1>Pedestrian Overhead Walkways</h1>
+      <p>Are your footover bridges accessible?</p>
+    </div>
+    <div id="counter">Loading...</div>
   </div>
-  <div id="counter">Loading...</div>
-</div>
 
-  <!-- Map -->
   <div id="map"></div>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- Your JS -->
+  <!-- Custom JS -->
   <script src="script.js"></script>
 
 </body>
