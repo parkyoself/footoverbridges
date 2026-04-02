@@ -9,7 +9,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
 }).addTo(map);
 
 // Load GeoJSON
-fetch('data.geojson')
+fetch('walkways.geojson')
   .then(res => res.json())
   .then(data => {
 
