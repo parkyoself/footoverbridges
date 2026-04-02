@@ -20,41 +20,63 @@ fetch('walkways.geojson')
   .then(res => res.json())
   .then(data => {
 
-    console.log("GeoJSON loaded:", data); // DEBUG
-
-    // Update counter
+    // Counter
     const count = data.features.length;
     document.getElementById("counter").textContent =
       `${count} walkway${count !== 1 ? "s" : ""} mapped`;
 
     // Add GeoJSON layer
-    const geoLayer = L.geoJSON(data, {
+    L.geoJSON(data, {
 
-      // Force points to render as visible circles
+      // Style markers based on lift working
       pointToLayer: function (feature, latlng) {
-        console.log("Feature:", feature); // DEBUG
+        const liftWorking = feature.properties?.LiftEscalator_working;
+
+        const color = liftWorking ? "#22c55e" : "#ef4444";
 
         return L.circleMarker(latlng, {
           radius: 8,
-          color: "#22c55e",
-          fillColor: "#22c55e",
+          color: color,
+          fillColor: color,
           fillOpacity: 1
         });
       },
 
-      // Popup
+      // Popup content
       onEachFeature: function (feature, layer) {
         const p = feature.properties;
 
         const name = p?.Name || "Unnamed";
+        const lift = p?.LiftEscalator_working ? "Working" : "Not working";
+        const lighting = p?.Well_lit ? "Well lit" : "Poor lighting";
 
-        layer.bindPopup(`<strong>${name}</strong>`);
+        const busStop =
+          p?.Nearest_Bus_Stop_Location ||
+          p?.["Nearest Bus Stop Location"] ||
+          "Not available";
+
+        const video =
+          p?.Video_link ||
+          p?.["Video link"];
+
+        const videoHTML = video
+          ? `<a href="${video}" target="_blank">Watch video</a>`
+          : "No video";
+
+        const content = `
+          <div>
+            <strong>${name}</strong><br/>
+            Lift/Escalator: ${lift}<br/>
+            Lighting: ${lighting}<br/>
+            Bus stop: ${busStop}<br/>
+            ${videoHTML}
+          </div>
+        `;
+
+        layer.bindPopup(content);
       }
 
     }).addTo(map);
-
-    // DEBUG: check bounds
-    console.log("Bounds:", geoLayer.getBounds());
 
   })
   .catch(err => console.error("GeoJSON load error:", err));
