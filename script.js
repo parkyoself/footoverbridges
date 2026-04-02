@@ -1,71 +1,78 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  background: #0b0f14;
-  font-family: 'DM Sans', system-ui, sans-serif;
-  color: #e5e7eb;
-}
+// Initialize map
+const map = L.map('map').setView([17.3850, 78.4867], 12);
 
-/* Header */
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
+// Dark basemap
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap contributors & CARTO',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
 
-  background: rgba(11, 15, 20, 0.85);
-  backdrop-filter: blur(8px);
+// Load GeoJSON
+fetch('data.geojson')
+  .then(res => res.json())
+  .then(data => {
 
-  padding: 14px 18px;
-  box-sizing: border-box;
+    // Update counter
+    const count = data.features.length;
+    document.getElementById("counter").textContent =
+      `${count} walkway${count !== 1 ? "s" : ""} mapped`;
 
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
+    L.geoJSON(data, {
 
-/* Title */
-.header h1 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.2px;
-  color: #f3f4f6;
-}
+      // Marker styling
+      pointToLayer: function (feature, latlng) {
+        const props = feature.properties;
 
-/* Subtitle */
-.header p {
-  margin: 3px 0 0 0;
-  font-size: 13px;
-  font-weight: 400;
-  color: #9ca3af;
-}
+        const liftWorking = props?.LiftEscalator_working;
+        const wellLit = props?.Well_lit;
 
-/* Counter */
-#counter {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #6b7280;
-}
+        let color = "#ef4444"; // red
 
-/* Map layout */
-#map {
-  width: 100%;
-  height: calc(100vh - 64px);
-  margin-top: 64px;
-}
+        if (liftWorking && wellLit) {
+          color = "#22c55e"; // green
+        } else if (liftWorking || wellLit) {
+          color = "#f59e0b"; // amber
+        }
 
-/* Tile tuning */
-.leaflet-tile {
-  filter: brightness(0.9) contrast(1.1);
-}
+        return L.circleMarker(latlng, {
+          radius: 7,
+          color: color,
+          fillColor: color,
+          fillOpacity: 0.9
+        });
+      },
 
-/* Popup styling */
-.leaflet-popup-content-wrapper {
-  background: #111827;
-  color: #e5e7eb;
-  border-radius: 8px;
-}
+      // Popup content
+      onEachFeature: function (feature, layer) {
+        const p = feature.properties;
 
-.leaflet-popup-tip {
-  background: #111827;
-}
+        const name = p?.Name || "Unnamed";
+        const lift = p?.LiftEscalator_working ? "Working" : "Not working";
+        const lighting = p?.Well_lit ? "Well lit" : "Poor lighting";
+
+        const video =
+          p?.Video_link ||
+          p?.["Video link"] ||
+          null;
+
+        const videoHTML = video
+          ? `<a href="${video}" target="_blank">Watch video</a>`
+          : "No video";
+
+        const content = `
+          <div>
+            <strong>${name}</strong><br/>
+            Lift/Escalator: ${lift}<br/>
+            Lighting: ${lighting}<br/>
+            ${videoHTML}
+          </div>
+        `;
+
+        layer.bindPopup(content);
+      }
+
+    }).addTo(map);
+
+  })
+  .catch(err => console.error("GeoJSON load error:", err));
