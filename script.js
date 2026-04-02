@@ -1,7 +1,7 @@
-// Initialize map
+// Initialize map (no fixed center needed)
 const map = L.map('map', {
-  zoomControl: false   // disable default position
-}).setView([17.46306, 78.38523], 12);
+  zoomControl: false
+});
 
 // Add zoom control to top-right
 L.control.zoom({
@@ -16,30 +16,30 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
 }).addTo(map);
 
 // Load GeoJSON
-fetch('walkways.geojson')
+fetch('data.geojson')
   .then(res => res.json())
   .then(data => {
 
-    // Update counter
+    // Counter
     const count = data.features.length;
     document.getElementById("counter").textContent =
       `${count} walkway${count !== 1 ? "s" : ""} mapped`;
 
-    L.geoJSON(data, {
+    // Create GeoJSON layer
+    const geoLayer = L.geoJSON(data, {
 
-      // Marker styling
       pointToLayer: function (feature, latlng) {
         const props = feature.properties;
 
         const liftWorking = props?.LiftEscalator_working;
         const wellLit = props?.Well_lit;
 
-        let color = "#ef4444"; // red
+        let color = "#ef4444";
 
         if (liftWorking && wellLit) {
-          color = "#22c55e"; // green
+          color = "#22c55e";
         } else if (liftWorking || wellLit) {
-          color = "#f59e0b"; // amber
+          color = "#f59e0b";
         }
 
         return L.circleMarker(latlng, {
@@ -50,7 +50,6 @@ fetch('walkways.geojson')
         });
       },
 
-      // Popup content
       onEachFeature: function (feature, layer) {
         const p = feature.properties;
 
@@ -80,6 +79,11 @@ fetch('walkways.geojson')
       }
 
     }).addTo(map);
+
+    // ✅ Auto-fit map to all features
+    map.fitBounds(geoLayer.getBounds(), {
+      padding: [40, 40] // space around edges
+    });
 
   })
   .catch(err => console.error("GeoJSON load error:", err));
