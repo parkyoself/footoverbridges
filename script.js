@@ -1,5 +1,12 @@
 // Initialize map
-const map = L.map('map').setView([17.3850, 78.4867], 12);
+const map = L.map('map', {
+  zoomControl: false   // disable default position
+}).setView([17.46306, 78.38523], 12);
+
+// Add zoom control to top-right
+L.control.zoom({
+  position: 'topright'
+}).addTo(map);
 
 // Dark basemap
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
