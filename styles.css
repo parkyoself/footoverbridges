@@ -80,3 +80,7 @@ html, body {
 .leaflet-popup-tip {
   background: #111827;
 }
+
+.leaflet-top.leaflet-right {
+  margin-top: 64px;
+}
