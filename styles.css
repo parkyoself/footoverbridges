@@ -40,6 +40,13 @@ html, body {
   color: #9ca3af;
 }
 
+/* Counter */
+#counter {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
 /* Map layout */
 #map {
   width: 100%;
