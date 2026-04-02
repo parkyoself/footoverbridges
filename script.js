@@ -1,9 +1,9 @@
-// Initialize map (no fixed center needed)
+// Initialize map with fixed center
 const map = L.map('map', {
   zoomControl: false
-});
+}).setView([17.46306, 78.38523], 12);
 
-// Add zoom control to top-right
+// Zoom controls top-right
 L.control.zoom({
   position: 'topright'
 }).addTo(map);
@@ -20,27 +20,35 @@ fetch('data.geojson')
   .then(res => res.json())
   .then(data => {
 
+    // Fix: convert "Location" → geometry if needed
+    data.features.forEach(feature => {
+      if (!feature.geometry && feature.properties?.Location) {
+        const [lat, lng] = feature.properties.Location.split(',').map(Number);
+
+        feature.geometry = {
+          type: "Point",
+          coordinates: [lng, lat]
+        };
+      }
+    });
+
     // Counter
     const count = data.features.length;
     document.getElementById("counter").textContent =
       `${count} walkway${count !== 1 ? "s" : ""} mapped`;
 
-    // Create GeoJSON layer
-    const geoLayer = L.geoJSON(data, {
+    // Add GeoJSON
+    L.geoJSON(data, {
 
       pointToLayer: function (feature, latlng) {
-        const props = feature.properties;
+        const p = feature.properties;
 
-        const liftWorking = props?.LiftEscalator_working;
-        const wellLit = props?.Well_lit;
+        const lift = p?.LiftEscalator_working;
+        const lit = p?.Well_lit;
 
         let color = "#ef4444";
-
-        if (liftWorking && wellLit) {
-          color = "#22c55e";
-        } else if (liftWorking || wellLit) {
-          color = "#f59e0b";
-        }
+        if (lift && lit) color = "#22c55e";
+        else if (lift || lit) color = "#f59e0b";
 
         return L.circleMarker(latlng, {
           radius: 7,
@@ -79,11 +87,6 @@ fetch('data.geojson')
       }
 
     }).addTo(map);
-
-    // ✅ Auto-fit map to all features
-    map.fitBounds(geoLayer.getBounds(), {
-      padding: [40, 40] // space around edges
-    });
 
   })
   .catch(err => console.error("GeoJSON load error:", err));
