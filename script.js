@@ -28,12 +28,21 @@ fetch('walkways.geojson')
     // Add GeoJSON
     L.geoJSON(data, {
 
-      // Marker color based on lift
+      // Marker styling
       pointToLayer: function (feature, latlng) {
         const p = feature.properties || {};
 
-        const liftWorking = p.LiftEscalator_working === true;
-        const color = liftWorking ? "#22c55e" : "#ef4444";
+        // Read and normalize lift value
+        let liftRaw = p["Lift/Escalator working?"];
+        liftRaw = String(liftRaw).toLowerCase().trim();
+
+        let color = "#f59e0b"; // amber (unknown)
+
+        if (liftRaw === "yes") {
+          color = "#22c55e"; // green
+        } else if (liftRaw === "no") {
+          color = "#ef4444"; // red
+        }
 
         return L.circleMarker(latlng, {
           radius: 8,
@@ -43,22 +52,38 @@ fetch('walkways.geojson')
         });
       },
 
-      // Popup
+      // Popup content
       onEachFeature: function (feature, layer) {
         const p = feature.properties || {};
 
         const name = p.Name || "Unnamed";
-        const lift = p.LiftEscalator_working === true
-          ? "Working"
-          : "Not working";
 
-        const lighting = p.Well_lit === true
-          ? "Well lit"
-          : "Poor lighting";
+        // Lift status
+        let liftRaw = p["Lift/Escalator working?"];
+        liftRaw = String(liftRaw).toLowerCase().trim();
 
+        const lift =
+          liftRaw === "yes"
+            ? "Working"
+            : liftRaw === "no"
+            ? "Not working"
+            : "Unknown";
+
+        // Lighting
+        let lightRaw = p["Well lit?"];
+        lightRaw = String(lightRaw).toLowerCase().trim();
+
+        const lighting =
+          lightRaw === "yes"
+            ? "Well lit"
+            : lightRaw === "no"
+            ? "Poor lighting"
+            : "Unknown";
+
+        // Video
         const video =
-          p.Video_link ||
           p["Video link"] ||
+          p.Video_link ||
           null;
 
         const content = `
