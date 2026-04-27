@@ -26,27 +26,30 @@ fetch('walkways.geojson')
     L.geoJSON(data, {
 
       pointToLayer: function (feature, latlng) {
-        const p = feature.properties || {};
+      const p = feature.properties || {};
 
-        // 🔥 Handle your actual data format
-        const liftRaw =
-          p["Lift/Escalator working?"] ??
-          p.LiftEscalator_working;
+      // Get raw value
+      let liftRaw = p["Lift/Escalator working?"];
+      
+      // Normalize to lowercase string
+      liftRaw = String(liftRaw).toLowerCase().trim();
+      
+      // Decide color
+      let color = "#f59e0b"; // default = amber (unknown / NA)
 
-        // Normalize values ("Yes"/"No"/true/false)
-        const liftWorking =
-          liftRaw === true ||
-          liftRaw === "Yes" ||
-          liftRaw === "yes";
+      if (liftRaw === "yes" || liftRaw === "true") {
+        color = "#22c55e"; // green
+      } else if (liftRaw === "no" || liftRaw === "false") {
+        color = "#ef4444"; // red
+      }
 
-        const color = liftWorking ? "#22c55e" : "#ef4444";
-
-        return L.circleMarker(latlng, {
-          radius: 8,
-          color: color,
-          fillColor: color,
-          fillOpacity: 1
-        });
+      return L.circleMarker(latlng, {
+        radius: 8,
+        color: color,
+        fillColor: color,
+        fillOpacity: 1
+      });
+}
       },
 
       onEachFeature: function (feature, layer) {
