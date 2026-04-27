@@ -3,10 +3,8 @@ const map = L.map('map', {
   zoomControl: false
 }).setView([17.46306, 78.38523], 12);
 
-// Zoom controls top-right
-L.control.zoom({
-  position: 'topright'
-}).addTo(map);
+// Zoom controls
+L.control.zoom({ position: 'topright' }).addTo(map);
 
 // Dark basemap
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
@@ -21,18 +19,26 @@ fetch('walkways.geojson')
   .then(data => {
 
     // Counter
-    const count = data.features?.length || 0;
+    const count = data.features.length;
     document.getElementById("counter").textContent =
       `${count} walkway${count !== 1 ? "s" : ""} mapped`;
 
-    // Add GeoJSON
     L.geoJSON(data, {
 
-      // Marker color based on lift
       pointToLayer: function (feature, latlng) {
         const p = feature.properties || {};
 
-        const liftWorking = p.LiftEscalator_working === true;
+        // 🔥 Handle your actual data format
+        const liftRaw =
+          p["Lift/Escalator working?"] ??
+          p.LiftEscalator_working;
+
+        // Normalize values ("Yes"/"No"/true/false)
+        const liftWorking =
+          liftRaw === true ||
+          liftRaw === "Yes" ||
+          liftRaw === "yes";
+
         const color = liftWorking ? "#22c55e" : "#ef4444";
 
         return L.circleMarker(latlng, {
@@ -43,22 +49,32 @@ fetch('walkways.geojson')
         });
       },
 
-      // Popup
       onEachFeature: function (feature, layer) {
         const p = feature.properties || {};
 
         const name = p.Name || "Unnamed";
-        const lift = p.LiftEscalator_working === true
-          ? "Working"
-          : "Not working";
 
-        const lighting = p.Well_lit === true
-          ? "Well lit"
-          : "Poor lighting";
+        const liftRaw =
+          p["Lift/Escalator working?"] ??
+          p.LiftEscalator_working;
+
+        const lift =
+          (liftRaw === true || liftRaw === "Yes" || liftRaw === "yes")
+            ? "Working"
+            : "Not working";
+
+        const lightingRaw =
+          p["Well lit?"] ??
+          p.Well_lit;
+
+        const lighting =
+          (lightingRaw === true || lightingRaw === "Yes" || lightingRaw === "yes")
+            ? "Well lit"
+            : "Poor lighting";
 
         const video =
-          p.Video_link ||
           p["Video link"] ||
+          p.Video_link ||
           null;
 
         const content = `
