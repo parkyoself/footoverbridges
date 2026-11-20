@@ -30,7 +30,19 @@ html, body {
 /* Left side */
 .header-left {
   display: flex;
+  flex-direction: row;
+}
+/* Right side */
+.header-right {
+  display: flex;
+  flex-direction: row;
+}
+
+.title {
+  display: flex;
   flex-direction: column;
+  justify-content: center;
+  margin-left: 12px;
 }
 
 /* Title */
@@ -53,6 +65,17 @@ html, body {
   font-size: 18px;
   font-weight: 700;
   color: #22c55e;
+}
+
+.audit-button {
+  margin-left: 12px;
+  background: Red;
+  color: #e5e7eb;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 /* Map */

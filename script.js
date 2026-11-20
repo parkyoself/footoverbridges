@@ -1,3 +1,9 @@
+// onclick handler for audit button
+document.getElementById("auditButton").addEventListener("click", function () {
+  // redirect to kobo audit page
+  window.location.href = "https://ee.kobotoolbox.org/x/ZPidMuMH";
+});
+
 // Initialize map
 const map = L.map('map', {
   zoomControl: false
@@ -9,7 +15,7 @@ L.control.zoom({
 }).addTo(map);
 
 // Dark basemap
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_5d42_1_91ca7d6cad11aa2cc49d1c97', {
   attribution: '&copy; OpenStreetMap contributors & CARTO',
   subdomains: 'abcd',
   maxZoom: 19
